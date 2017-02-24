@@ -225,11 +225,32 @@ var util = (function () {
         $level.removeClass('active');
     };
 
-    // snippet
-    function Snippet (selector) {
+    ////
+    // LOADER
+    ////
+    function Loader (options) {
         var self = this;
-        this.el = selector;
+        self.$el = $(options.root);
     }
+    Loader.prototype.init = function () {
+        var self = this;
+    };
+    Loader.prototype.show = function () {
+        var self = this;  
+    };
+    Loader.prototype.hide = function () {
+        var self = this;
+        self.$el.velocity({opacity: 0}, {display: "none", duration: 400});
+    };
+
+    // snippet
+    function Snippet (options) {
+        var self = this;
+        self.$el = $(options.root);
+    }
+    Snippet.prototype.init = function () {
+        var self = this;
+    };
     Snippet.prototype.expand = function () {
         var self = this;  
     };
@@ -241,33 +262,36 @@ var util = (function () {
 
     }, 1000);
 
+    
+    var loaderMain = new Loader({root: '#loader-main-bg'});
+    loaderMain.init();
+
     $(window).load(function () {
         console.log('window');
 
     });
 
+    var options = {
+        sliderFront: {
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            dots: false,
+            arrows: true
+        },
+        menuDrop: {root: 'nav.header.drop'},
+        menuMobile: {root:'.menu.mobile', width: 320},
+        menuBtn: {root:'.menu-btn.burger'}
+    };
+
     $(document).ready(function() {
         console.log('document');
-        var $front = $('.front');
+        loaderMain.hide();
         var $sliderFront = $('#slider-front');
 
-        var options = {
-            sliderFront: {
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                dots: false,
-                arrows: true
-            },
-            menuDrop: {root: 'nav.header.drop'},
-            menuMobile: {root:'.menu.mobile', width: 320},
-            menuBtn: {root:'.menu-btn.burger'}
-        };
-        
         var menuDrop = new MenuDrop(options.menuDrop);
         menuDrop.init({hover: ($win.width() > 950), click: ($win.width() < 950)});
         var menuMobile = new MenuMobile('.menu.main');
         var menuBtn = new MenuBtn('.menu-mobile-btn.burger');
-
         var init = function () {
             menuBtn.init();
             $sliderFront.slick(options.sliderFront);

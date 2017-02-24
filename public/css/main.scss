@@ -196,6 +196,28 @@ header, footer, section, article, nav {
     *zoom: 1;
     /*For IE 6/7 only*/
 }
+////
+// LOADER
+////
+$loader-height: 90px;
+$loader-width: 90px;
+#loader-main-bg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    z-index: 9999;
+    svg {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: - $loader-height / 2;
+        margin-left: - $loader-width / 2;
+    }
+}
 
 ////
 // HEADER
