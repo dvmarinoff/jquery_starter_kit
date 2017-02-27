@@ -1,5 +1,5 @@
 {
-  "name": "startup_code",
+  "name": "jquery_starter_kit",
   "version": "1.0.0",
   "description": "",
   "main": "gulpfile.js",
@@ -13,6 +13,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "dvmarinoff <dvmarinoff@gmail.com>",
+  "license": "MIT"
 }
