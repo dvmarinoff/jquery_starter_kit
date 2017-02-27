@@ -273,6 +273,7 @@ nav.header {
                 margin: 0 15px;
                 text-transform: uppercase;
                 line-height: $nav-height;
+                white-space: nowrap;
                 font-size: 14px;
                 color: $gray-text;
             }
@@ -304,6 +305,7 @@ nav.header {
             display: none;
             position: absolute;
             top: $nav-height;
+            left: 0;
         }
     }
     &.mobile-full {
@@ -357,7 +359,7 @@ $menu-btn-width: 30px;
 $menu-btn-height: 25px;
 $menu-btn-color: #fff;
 .menu-mobile-btn {
-    // display: none;
+    display: none;
     position: absolute;
     top: ($header-height - $menu-btn-height) / 2;
     left: 15px;
@@ -372,22 +374,80 @@ $menu-btn-color: #fff;
 ////
 // MENU BTN BURGER
 ////
-.menu-mobile-btn.burger {
-    .top, .middle, .bottom {
-        display: block;
+.menu-mobile-btn {
+    &.burger, &.arrow {
+        .top, .middle, .bottom {
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background-color: $menu-btn-color;
+        }
+        .top {
+            top: 0;
+        }
+        .middle {
+            top: 11px;
+        }
+        .bottom {
+            top: 22px;
+        }
+    }
+}
+
+////
+// MENU BTN ARROW
+////
+.menu-mobile-btn {
+    &.arrow {
+        .top, .bottom {
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background-color: $menu-btn-color;
+        }
+        .top {
+            top: 0;
+        }
+        .middle {
+            top: 11px;
+        }
+        .bottom {
+            top: 22px;
+        }
+    }
+}
+
+////
+// ASIDE NAV
+////
+$aside-expand-btn-size: 30px;
+nav.aside {
+    width: 320px;
+    padding: 15px 0;
+    background-color: #000;
+    
+    .expand-btn {
         position: absolute;
-        width: 100%;
-        height: 2px;
-        background-color: $menu-btn-color;
-    }
-    .top {
         top: 0;
+        left: 0;
+        width: $aside-expand-btn-size;
+        height: $aside-expand-btn-size;
+        line-height: $aside-expand-btn-size;
+        text-align: center;
     }
-    .middle {
-        top: 11px;
-    }
-    .bottom {
-        top: 22px;
+    ul {
+        position: relative;
+        li {
+            position: relative;
+            padding-left: $aside-expand-btn-size;
+            a {
+                display: block;
+                height: $aside-expand-btn-size;
+                line-height: $aside-expand-btn-size;
+            }
+        }
     }
 }
 
@@ -407,23 +467,53 @@ footer.main {
     .cont {
         width: 100%;
     }
+    $ipad-header-height: 60px;
+    $ipad-logo-height: 50px;
     header.main {
-        height: 60px;
+        height: $ipad-header-height;
+
         .logo {
-            top: 10px;
+            top: ($ipad-header-height - $ipad-logo-height) / 2;
             right: 15px;
-            height: 40px;
+            height: $ipad-logo-height;
+
+            img {
+                height: $ipad-logo-height;
+            }
         }
     }
-    nav.menu {
-
+    $ipad-nav-height: 30px;
+    nav.header {
+        height: $ipad-nav-height;
+        ul li a {
+            line-height: $ipad-nav-height;
+        }
+        &.basic {
+            top: ($ipad-header-height - $ipad-nav-height) / 2;
+        }
+        &.drop {
+            top: ($ipad-header-height - $ipad-nav-height);
+        }
+    }
+    .tools {
+        position: absolute;
+        top: 5px;
+        left: 15px;
+        .search {
+            padding: 0 5px 0 5px;
+        }
+    }
+    .menu-mobile-btn {
+        top: ($ipad-header-height - $menu-btn-height) / 2;
     }
 }
 @media all and (max-width: 980px) {
     .menu-mobile-btn {
         display: block;
     }
-    nav.menu {
+    $mobile-nav-bg: #000;
+    $mobile-nav-item-height: 40px;
+    nav.header.basic, .mobile-nav-cont {
         position: absolute;
         top: 0;
         left: -320px;
@@ -432,20 +522,53 @@ footer.main {
         height: 1000px;
         margin-left: 0;
         padding-top: 60px;
-        background-color: #fff;
+        background-color: $mobile-nav-bg;
         z-index: 9;
 
-        ul {
+        ul, nav.header.drop {
 
             li {
-
+                float: none;
                 a {
-                    float: none;
+                    display: block;
                     width: 100%;
-                    margin-bottom: 15px;
+                    height: $mobile-nav-item-height;
+                    line-height: $mobile-nav-item-height;
                 }
             }
         }
+    }
+    .mobile-nav-cont nav.header.drop {
+        .expand-btn {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+        }
+        ul {
+            position: relative;
+            top: 0;
+            li {
+                position: relative;
+                float: none;
+                padding-left: 30px;
+            a {
+                display: block;
+                width: 100%;
+                height: $mobile-nav-item-height;
+                line-height: $mobile-nav-item-height;
+            }
+        }
+        }   
+    }
+    .mobile-nav-cont {
+        position: relative;
+        top: 60px;
+        background-color: $mobile-nav-bg;
+
     }
 
 }

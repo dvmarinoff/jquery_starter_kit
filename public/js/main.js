@@ -39,14 +39,10 @@ var util = (function () {
 } ());
 
 ;(function () {
+    'use strict';
+
     var state = {};
     var ui = {};
-    var expand = function () {
-        var self = this;
-    };
-    var collapse = function () {
-        var self = this;
-    };
 
     ////
     // MENU MOBILE
@@ -69,7 +65,7 @@ var util = (function () {
     };
     MenuMobile.prototype.collapse = function () {
         var self = this;
-        self.$el.stop().velocity({left: - parseInt(self.mobileWidth)}, {duration: 100});
+        self.$el.stop().velocity({left: - parseInt(self.width)}, {duration: 100});
     };
 
     ////
@@ -77,37 +73,42 @@ var util = (function () {
     ////
     var burgerExpand = function () {
         var self = this;
-        var duration = 50;
-        var top = 11;
-        self.$top.velocity({top: top}, {duration: duration}).velocity({rotateZ: '-'+self.angle+'deg'}, {duration: duration});
-        self.$bottom.velocity({top: top}, {duration: duration}).velocity({rotateZ: self.angle+'deg'}, {duration: duration});
+        var duration = 100;
+        var middle = 11;
+        var angle = 45;
+        self.$top.velocity({top: middle}, {duration: duration}).velocity({rotateZ: '-'+angle+'deg'}, {duration: duration});
+        self.$middle.velocity({opacity: 0}, {display: 'none', duration: duration});
+        self.$bottom.velocity({top: middle}, {duration: duration}).velocity({rotateZ: angle+'deg'}, {duration: duration});
         return true;
     };
     var burgerCollapse = function () {
         var self = this;
-        var duration = 50;
+        var duration = 100;
         var middle = 11;
-        self.$top.velocity({top: middle, rotateZ: '+='+self.angle+'deg'}, {duration: duration}).velocity({top: 0}, {duration: duration});
-        self.$middle.velocity({opacity: 0}, {duration: duration}).velocity({top: middle,opacity: 1}, {duration: duration});
-        self.$bottom.velocity({top: middle, rotateZ: '-='+self.angle+'deg'}, {duration: duration}).velocity({top: 14}, {duration: duration});
+        var angle = 45;
+        self.$top.velocity({top: middle, rotateZ: '+='+angle+'deg'}, {duration: duration}).velocity({top: 0}, {duration: duration});
+        self.$middle.velocity({opacity: 1}, {display: 'block', duration: duration}).velocity({top: middle,opacity: 1}, {duration: duration});
+        self.$bottom.velocity({top: middle, rotateZ: '-='+angle+'deg'}, {duration: duration}).velocity({top: 22}, {duration: duration});
         return false;
     };
     var arrowExpand = function () {
         var self = this;
         var duration = 50;
-        var top = 7;
-        self.$top.velocity({top: top}, {duration: duration}).velocity({rotateZ: '-'+self.angle+'deg'}, {duration: duration});
-        self.$middle.velocity({opacity: 0}, {duration: duration}).velocity({top: middle,opacity: 1}, {duration: duration});
-        self.$bottom.velocity({top: top}, {duration: duration}).velocity({rotateZ: self.angle+'deg'}, {duration: duration});
+        var middle = 7;
+        var angle = 45;
+        self.$top.velocity({top: 1}, {duration: duration}).velocity({rotateZ: '-'+angle+'deg'}, {duration: duration});
+        self.$middle.velocity({left: 30 }, {duration: duration}).velocity({opacity: 0}, {display: 'none', duration: duration});
+        self.$bottom.velocity({top: 21}, {duration: duration}).velocity({rotateZ: angle+'deg'}, {duration: duration});
         return true;
     };
     var arrowCollapse = function () {
         var self = this;
         var duration = 50;
         var middle = 11;
-        self.burgerTop.velocity({top: middle, rotateZ: '+='+self.angle+'deg'}, {duration: duration}).velocity({top: 0}, {duration: duration});
-        self.burgerMiddle.velocity({opacity: 0}, {duration: duration}).velocity({top: middle,opacity: 1}, {duration: duration});
-        self.burgerBottom.velocity({top: middle, rotateZ: '-='+self.angle+'deg'}, {duration: duration}).velocity({top: 14}, {duration: duration});
+        var angle = 45;
+        self.$top.velocity({top: middle, rotateZ: '+='+angle+'deg'}, {duration: duration}).velocity({top: 0}, {duration: duration});
+        self.$middle.velocity({left: 0, opacity: 1}, {display: 'block', duration: duration});//.velocity({top: middle,opacity: 1}, {duration: duration});
+        self.$bottom.velocity({top: middle, rotateZ: '-='+angle+'deg'}, {duration: duration}).velocity({top: 22}, {duration: duration});
         return false;
     };
     function MenuBtn (options) {
@@ -116,11 +117,14 @@ var util = (function () {
         self.$top = self.$el.find('.top');
         self.$middle = self.$el.find('.middle');
         self.$bottom = self.$el.find('.bottom');
+        self.expandAnimation = options.expandAnimation;
+        self.collapseAnimation = options.collapseAnimation;
         self.isExpanded = false;
     }
     MenuBtn.prototype.init = function () {
         var self = this;
         self.$el.on('click', function () {
+            console.log(self.isExpanded);
             if(self.isExpanded) {
                 $document.trigger('menu:collapse');
             } else {
@@ -132,17 +136,17 @@ var util = (function () {
     };
     MenuBtn.prototype.expand = function () {
         var self = this;
-        self.isExpanded = expandBtn.apply(self);
+        self.isExpanded = self.expandAnimation.apply(self);
         self.$el.addClass('active');
     };
     MenuBtn.prototype.collapse = function () {
         var self = this;
-        self.isExpanded = collapseBtn.apply(self);
+        self.isExpanded = self.collapseAnimation.apply(self);
         self.$el.removeClass('active');
     };
 
     ////
-    // MENU DROP
+    // DROP NAV
     ////
     var sum = function (array) {
         return array.reduce(function(x, y) { return x + y; });
@@ -158,18 +162,18 @@ var util = (function () {
             return totalWidth;
         });
     };
-    function MenuDrop (options) {
+    function DropNav (options) {
         var self = this;
         self.$el = $(options.root);
         self.outer = options.outer || 'ul > li';
         self.inner = options.inner || 'ul ul';
         self.drop = options.drop || '.drop-ul';
-        self.outerLevel = self.$el.find(self.outer);
-        self.innerLevels = self.$el.find(self.inner);
-        self.expandBtns = self.$el.find('.expand');
-        self.expandable = self.$el.find('li').has('ul');
+        self.$outerLevel = self.$el.find(self.outer);
+        self.$innerLevels = self.$el.find(self.inner);
+        self.$expandBtns = self.$el.find('.expand-btn');
+        self.$expandable = self.$el.find('li').has('ul');
     }
-    MenuDrop.prototype.init = function (config) {
+    DropNav.prototype.init = function (config) {
         var self = this;
         var start = config || {hover: ($win.width() > 950), click: ($win.width() < 950)};
         if(start.hover) {
@@ -179,12 +183,12 @@ var util = (function () {
             self.initClick();
         }
     };
-    MenuDrop.prototype.initClick = function () {
+    DropNav.prototype.initClick = function () {
         var self = this;
-        self.expandLevelBtns.on('click', function (e) {
+        self.$expandBtns.on('click', function (e) {
             e.stopPropagation();
-            var $expandLevelBtn = $(this);
-            var $nextLevel = $expandBtn.siblings('li ul').first();
+            var $expandBtn = $(this);
+            var $nextLevel = $expandBtn.siblings('ul').first();
             $nextLevel.toggleClass('active');
             $expandBtn.toggleClass('active');
             if($expandBtn.hasClass('active')) {
@@ -197,30 +201,25 @@ var util = (function () {
         });
         console.log('click events');
     };
-    MenuDrop.prototype.initHover = function () {
+    DropNav.prototype.initHover = function () {
         var self = this;
-        console.log(self.innerLevels);
-        widths(self.innerLevels);
-        self.expandable.on('mouseenter', function (e) {
-            console.log($(this));
-            var $nextLevel = $(this).children('ul');//.first();
-            console.log($nextLevel);
+        console.log(self.$innerLevels);
+        self.$expandable.on('mouseenter', function (e) {
+            var $nextLevel = $(this).children('ul');
             self.expandLevel($nextLevel);
-            if($nextLevel.width() < 2) {
-                widths($nextLevel);
-            }
+            widths(self.$innerLevels);
         });
-        self.expandable.on('mouseleave', function () {
+        self.$expandable.on('mouseleave', function () {
             var $nextLevel = $(this).children('ul');
             self.collapseLevel($nextLevel);
         });
         console.log('hover events');
     };
-    MenuDrop.prototype.expandLevel = function ($level) {
+    DropNav.prototype.expandLevel = function ($level) {
         var self = this;
         $level.addClass('active');
     };
-    MenuDrop.prototype.collapseLevel = function ($level) {
+    DropNav.prototype.collapseLevel = function ($level) {
         var self = this;
         $level.removeClass('active');
     };
@@ -243,7 +242,9 @@ var util = (function () {
         self.$el.velocity({opacity: 0}, {display: "none", duration: 400});
     };
 
-    // snippet
+    ////
+    // SNIPPET
+    ////
     function Snippet (options) {
         var self = this;
         self.$el = $(options.root);
@@ -258,11 +259,6 @@ var util = (function () {
         var self = this;
     };
 
-    setTimeout(function () {
-
-    }, 1000);
-
-    
     var loaderMain = new Loader({root: '#loader-main-bg'});
     loaderMain.init();
 
@@ -271,6 +267,9 @@ var util = (function () {
 
     });
 
+    var isMobile = function (queryWidth) {
+        return $win.width() > queryWidth;
+    };
     var options = {
         sliderFront: {
             slidesToShow: 1,
@@ -278,9 +277,20 @@ var util = (function () {
             dots: false,
             arrows: true
         },
-        menuDrop: {root: 'nav.header.drop'},
-        menuMobile: {root:'.menu.mobile', width: 320},
-        menuBtn: {root:'.menu-btn.burger'}
+        minWidthMobile: 951,
+        menuMobileBasic: {root:'nav.header.basic', width: 320},
+        menuMobileDrop: {root:'.mobile-nav-cont', width: 320},
+        dropNav: {root: 'nav.header.drop'},
+        menuBtnBurger: {
+            root:'.menu-mobile-btn.burger', 
+            expandAnimation: burgerExpand,
+            collapseAnimation: burgerCollapse 
+        },
+        menuBtnArrow: {
+            root:'.menu-mobile-btn.arrow', 
+            expandAnimation: arrowExpand,
+            collapseAnimation: arrowCollapse 
+        }
     };
 
     $(document).ready(function() {
@@ -288,18 +298,22 @@ var util = (function () {
         loaderMain.hide();
         var $sliderFront = $('#slider-front');
 
-        var menuDrop = new MenuDrop(options.menuDrop);
-        menuDrop.init({hover: ($win.width() > 950), click: ($win.width() < 950)});
-        var menuMobile = new MenuMobile('.menu.main');
-        var menuBtn = new MenuBtn('.menu-mobile-btn.burger');
+        var dropNav = new DropNav(options.dropNav);
+        dropNav.init({hover: ($win.width() > 950), click: ($win.width() < 950)});
+        var menuMobileDrop = new MenuMobile(options.menuMobileDrop);
+
+        var menuMobileBasic = new MenuMobile(options.menuMobileBasic);
+        var menuBtnBurger = new MenuBtn(options.menuBtnBurger);
+        var menuBtnArrow = new MenuBtn(options.menuBtnArrow);
+        
         var init = function () {
-            menuBtn.init();
             $sliderFront.slick(options.sliderFront);
-            
-            if($win.width() < 951) {
-                menuMobile.init();
-            }
-            if($win.width() > 950) {
+            if($win.width() < options.minWidthMobile) {
+                menuMobileBasic.init();
+                menuBtnBurger.init();
+
+                menuMobileDrop.init();
+                menuBtnArrow.init();
             }
         };
         init();
