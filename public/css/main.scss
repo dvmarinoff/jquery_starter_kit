@@ -197,6 +197,22 @@ header, footer, section, article, nav {
     /*For IE 6/7 only*/
 }
 ////
+// TEST
+////
+#test-object {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    background-color: #489;
+}
+#test-object-2 {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    background-color: #489;
+}
+
+////
 // LOADER
 ////
 $loader-height: 90px;

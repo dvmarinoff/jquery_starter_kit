@@ -44,6 +44,34 @@ var util = (function () {
     var state = {};
     var ui = {};
 
+    var cb = function (param) {
+        // generic callback
+        return param;
+    };
+    $.fn.show = function (duration) {
+        return $(this).velocity({opacity: 1}, {display: 'block', duration: duration});
+    };
+    $.fn.hide = function (duration) {
+        return $(this).velocity({opacity: 0}, {display: 'none', duration: duration});
+    };
+    $.fn.slideLeft = function (duration, left) {
+        return $(this).velocity({left: left}, {duration: duration});
+    };
+    $.fn.slideRight = function (duration, right) {
+        return $(this).velocity({right: right}, {duration: duration});
+    };
+    $.fn.top = function (duration, top, async) {
+        return $(this).velocity({top: top}, {duration: duration});
+    };
+    $.fn.rotateZ = function (duration, angle) {
+        return $(this).velocity({rotateZ: angle+'deg'}, {duration: duration});
+    };
+    $.fn.topRotateZ = function (duration, top, angle) {
+        return $(this).velocity({top: top, rotateZ: angle+'deg'}, {duration: duration});
+    };
+
+    $('#test-object').topRotateZ(1000, 100, 45);
+    $('#test-object-2').slideLeft(1000, 100).rotateZ(1000, 90).hide(1000).show(1000).rotateZ(1000, 0).slideLeft(1000, 0);
     ////
     // MENU MOBILE
     ////
@@ -61,11 +89,11 @@ var util = (function () {
     };
     MenuMobile.prototype.expand = function () {
         var self = this;
-        self.$el.stop().velocity({left: 0}, {duration: 100});
+        self.$el.slideLeft(100,0);
     };
     MenuMobile.prototype.collapse = function () {
         var self = this;
-        self.$el.stop().velocity({left: - parseInt(self.width)}, {duration: 100});
+        self.$el.slideLeft(100, - parseInt(self.width));
     };
 
     ////
@@ -76,9 +104,9 @@ var util = (function () {
         var duration = 100;
         var middle = 11;
         var angle = 45;
-        self.$top.velocity({top: middle}, {duration: duration}).velocity({rotateZ: '-'+angle+'deg'}, {duration: duration});
-        self.$middle.velocity({opacity: 0}, {display: 'none', duration: duration});
-        self.$bottom.velocity({top: middle}, {duration: duration}).velocity({rotateZ: angle+'deg'}, {duration: duration});
+        self.$top.top(duration, middle).rotateZ(duration, -angle);
+        self.$middle.hide(duration);
+        self.$bottom.top(duration, middle).rotateZ(duration, angle);
         return true;
     };
     var burgerCollapse = function () {
@@ -86,9 +114,9 @@ var util = (function () {
         var duration = 100;
         var middle = 11;
         var angle = 45;
-        self.$top.velocity({top: middle, rotateZ: '+='+angle+'deg'}, {duration: duration}).velocity({top: 0}, {duration: duration});
-        self.$middle.velocity({opacity: 1}, {display: 'block', duration: duration}).velocity({top: middle,opacity: 1}, {duration: duration});
-        self.$bottom.velocity({top: middle, rotateZ: '-='+angle+'deg'}, {duration: duration}).velocity({top: 22}, {duration: duration});
+        self.$top.velocity({top: middle, rotateZ: '+='+angle+'deg'}, {duration: duration}).top(duration, 0);
+        self.$middle.show(duration).velocity({top: middle,opacity: 1}, {duration: duration});
+        self.$bottom.velocity({top: middle, rotateZ: '-='+angle+'deg'}, {duration: duration}).top(duration, 22);
         return false;
     };
     var arrowExpand = function () {
