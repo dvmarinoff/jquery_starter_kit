@@ -1,53 +1,15 @@
-// globals: window, document, $win, initWinWidth, initWinHeight
-var $win = $(window);
-var $document = $(document);
-var initWinWidth = $win.width();
-var initWinHeight = $win.height();
-
-var util = (function () {
-    'use strict';
-
-    /*DIMENTION HELPERS*/
-    $.fn.eqHeight = function(param) {
-        var self = $(this);
-        var targetHeight = param.height();
-
-        this.each(function() {
-            self.height(targetHeight);
-        });
-    };
-
-    $.fn.fit = function(param) {
-        var self = $(this);
-        var targetHeight = param.height();
-        var targetWidth = param.width();
-
-        this.each(function() {
-            self.height(targetHeight);
-            self.width(targetWidth);
-        });
-    };
-
-    $.fn.ratioHeight = function(ratio) {
-        var self = $(this);
-        var ratioH = self.width() * ratio;
-
-        this.each(function() {
-            self.height(ratioH);
-        });
-    };
-} ());
-
 ;(function () {
     'use strict';
-
-    var state = {};
-    var ui = {};
-
-    var cb = function (param) {
-        // generic callback
-        return param;
-    };
+    
+    // globals: window, document, $win, initWinWidth, initWinHeight
+    var $win = $(window);
+    var $document = $(document);
+    var initWinWidth = $win.width();
+    var initWinHeight = $win.height();
+    
+    ////
+    // ANIMATIONS
+    ////
     $.fn.show = function (duration) {
         return $(this).velocity({opacity: 1}, {display: 'block', duration: duration});
     };
@@ -69,9 +31,7 @@ var util = (function () {
     $.fn.topRotateZ = function (duration, top, angle) {
         return $(this).velocity({top: top, rotateZ: angle+'deg'}, {duration: duration});
     };
-
-    $('#test-object').topRotateZ(1000, 100, 45);
-    $('#test-object-2').slideLeft(1000, 100).rotateZ(1000, 90).hide(1000).show(1000).rotateZ(1000, 0).slideLeft(1000, 0);
+    
     ////
     // MENU MOBILE
     ////
@@ -287,64 +247,73 @@ var util = (function () {
         var self = this;
     };
 
-    var loaderMain = new Loader({root: '#loader-main-bg'});
-    loaderMain.init();
 
-    $(window).load(function () {
-        console.log('window');
-
-    });
 
     var isMobile = function (queryWidth) {
         return $win.width() > queryWidth;
     };
+    
     var options = {
-        sliderFront: {
-            slidesToShow: 1,
-            slidesToScroll: 1,
-            dots: false,
-            arrows: true
+        slider:{
+            front: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                dots: false,
+                arrows: true
+            }
         },
-        minWidthMobile: 951,
-        menuMobileBasic: {root:'nav.header.basic', width: 320},
-        menuMobileDrop: {root:'.mobile-nav-cont', width: 320},
-        dropNav: {root: 'nav.header.drop'},
-        menuBtnBurger: {
-            root:'.menu-mobile-btn.burger', 
-            expandAnimation: burgerExpand,
-            collapseAnimation: burgerCollapse 
+        menu: {
+            mobileBasic: { root:'nav.header.basic', width: 320 },
+            mobileDrop: { root:'.mobile-nav-cont', width: 320 },
+            btnBurger: { 
+                root:'.menu-mobile-btn.burger', 
+                expandAnimation: burgerExpand,
+                collapseAnimation: burgerCollapse 
+            },
+            menuBtnArrow: {
+                root:'.menu-mobile-btn.arrow', 
+                expandAnimation: arrowExpand,
+                collapseAnimation: arrowCollapse 
+            }
         },
-        menuBtnArrow: {
-            root:'.menu-mobile-btn.arrow', 
-            expandAnimation: arrowExpand,
-            collapseAnimation: arrowCollapse 
-        }
+        dropNav: {root: 'nav.header.drop', hover: ($win.width() > 950), click: ($win.width() < 950)},
+        loader: {root: '#loader-main-bg'},
+        minWidthMobile: 951
+    };
+        
+    var ui = {
+        menu: {
+            mobileBasic: new MenuMobile(options.menu.mobileBasic),
+            mobileDrop: new MenuMobile(options.menuMobileDrop),
+            btnBurger: new MenuBtn(options.menu.btnBurger),
+            btnArrow: new MenuBtn(options.menu.btnArrow)
+        },
+        dropNav: new DropNav(options.dropNav),
+        loader: new Loader(options.loader),
+        slider: $('#slider-front')
     };
 
-    $(document).ready(function() {
-        console.log('document');
+    ui.loader.init();
+    
+    var app = function (ui) {
+        ui.dropNav.init();
+        ui.slider.front.slick(options.slider.front);
+
+        if($win.width() < options.minWidthMobile) {
+            ui.menu.mobileBasic.init();
+            ui.menu.btnBurger.init();
+
+            ui.menu.mobileDrop.init();
+            ui.menu.btnArrow.init();
+        }
+    };
+    
+    $document.ready(function() {
+        app(ui);
+    });
+    $win.load(function () {
+        console.log('window');
         loaderMain.hide();
-        var $sliderFront = $('#slider-front');
-
-        var dropNav = new DropNav(options.dropNav);
-        dropNav.init({hover: ($win.width() > 950), click: ($win.width() < 950)});
-        var menuMobileDrop = new MenuMobile(options.menuMobileDrop);
-
-        var menuMobileBasic = new MenuMobile(options.menuMobileBasic);
-        var menuBtnBurger = new MenuBtn(options.menuBtnBurger);
-        var menuBtnArrow = new MenuBtn(options.menuBtnArrow);
-        
-        var init = function () {
-            $sliderFront.slick(options.sliderFront);
-            if($win.width() < options.minWidthMobile) {
-                menuMobileBasic.init();
-                menuBtnBurger.init();
-
-                menuMobileDrop.init();
-                menuBtnArrow.init();
-            }
-        };
-        init();
     });
 
 }());
