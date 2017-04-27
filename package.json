@@ -8,7 +8,7 @@
     "gulp": "^3.8.11"
   },
   "devDependencies": {
-    "gulp-ruby-sass": "^1.0.5",
+    "gulp-ruby-sass": "^1.0.5"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
