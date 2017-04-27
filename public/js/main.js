@@ -313,7 +313,7 @@
     });
     $win.load(function () {
         console.log('window');
-        loaderMain.hide();
+        ui.loader.hide();
     });
 
 }());
