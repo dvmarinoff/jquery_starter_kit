@@ -247,12 +247,38 @@
         var self = this;
     };
 
-
-
+    ////
+    // UTIL FUNCTIONS
+    ////
+    // map function for js objects
+    // map :: (Function, Object) -> Object
+    var map = function (f, object) {
+        for (var key in object) {
+            if (object.hasOwnProperty(key)) {
+                f(object[key], key, object);
+            }
+        }
+        return object;
+    };
+    // curried map function for js objects
+    // mapCurried :: Function -> (Object -> Object)
+    var mapCurried = function (f, object) {
+        return function (object) {
+            for (var key in object) {
+                if (object.hasOwnProperty(key)) {
+                    f(object[key], key, object);
+                }
+            }
+            return object;
+        };
+    };
     var isMobile = function (queryWidth) {
         return $win.width() > queryWidth;
     };
     
+    ////
+    // OPTIONS
+    ////
     var options = {
         slider:{
             front: {
